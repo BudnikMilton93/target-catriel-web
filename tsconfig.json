@@ -16,6 +16,8 @@
   "include": [
     "api/**/*.ts",
     "scripts/**/*.ts",
-    "prisma/**/*.ts"
+    "prisma/**/*.ts",
+    "e2e/**/*.ts",
+    "playwright.config.ts"
   ]
 }
