@@ -106,7 +106,44 @@ Esto será la base para la siguiente fase de integración y estabilización del 
 
 ---
 
-## 7) Referencia de endpoints (cURL)
+## 7) Tests automatizados
+
+### 7.1 Unit tests (Vitest)
+
+Cubren `api/_lib/` y los handlers de `api/` (auth, roles, response, y las
+reglas de negocio/autorización de los endpoints con `[id].ts`). Mockean
+`db` (Prisma) por completo — no requieren Postgres levantado.
+
+```bash
+npm run test
+```
+
+Helpers compartidos entre archivos de test en `api/_lib/test-utils.ts`:
+`createMockRes()` (mock de `http.ServerResponse`) y `mockAuthAs(userId, roles)`
+(simula un usuario autenticado, requiere que el test haya mockeado `db` con
+`usuario.findUnique`/`usuarioRol.findMany`).
+
+### 7.2 E2E (Playwright)
+
+Cubren el login mockeado del frontend y el guard de rutas (`e2e/auth.spec.ts`),
+contra `src/context/AuthContext.jsx` — no llaman a la API real, por lo que
+**no requieren Postgres ni `npm run dev:api`**. `playwright.config.ts` levanta
+únicamente el frontend (`npm run dev`) como `webServer`.
+
+```bash
+npm run test:e2e       # headless
+npm run test:e2e:ui    # modo interactivo
+```
+
+Si en el futuro un spec necesita ejercitar la API real, hay que agregar una
+segunda entrada a `webServer` en `playwright.config.ts` para `npm run dev:api`
+(con su propio readiness check) y documentar acá el requisito de
+`npm run db:up` + `npx prisma migrate deploy` + seed antes de correr esos
+specs — no asumir que todos los specs futuros lo necesitan.
+
+---
+
+## 8) Referencia de endpoints (cURL)
 
 IDs de la base semilla usados como Bearer token en estos ejemplos:
 
