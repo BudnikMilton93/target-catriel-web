@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Target Catriel — Diagramas internos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="_base.css">
+<style>
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .tile {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.4rem 1.5rem;
+    transition: border-color .15s, transform .15s;
+  }
+  .tile:hover { border-color: var(--green-soft); transform: translateY(-2px); }
+  .tile .icon { font-size: 1.6rem; margin-bottom: 0.6rem; display: block; }
+  .tile h2 { margin: 0 0 0.35rem; font-size: 1.05rem; color: var(--navy-soft); }
+  .tile p { margin: 0; color: var(--text-dim); font-size: 0.88rem; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Documentación interna · solo dev</p>
+    <h1>Diagramas del proyecto</h1>
+    <p class="subtitle">Vistas rápidas para orientarse sin releer todo <code>documents/</code>. Abrir cada uno directo en el navegador.</p>
+
+    <div class="grid">
+      <a class="tile card" href="estructura.html">
+        <span class="icon">🗂️</span>
+        <h2>Estructura del proyecto</h2>
+        <p>Carpetas principales de <code>src/</code>, <code>api/</code> y <code>prisma/</code>, y qué vive en cada una.</p>
+      </a>
+      <a class="tile card" href="stack.html">
+        <span class="icon">📦</span>
+        <h2>Stack y librerías</h2>
+        <p>Qué usamos en frontend, backend, base de datos y testing — y para qué.</p>
+      </a>
+      <a class="tile card" href="arquitectura.html">
+        <span class="icon">🏗️</span>
+        <h2>Arquitectura</h2>
+        <p>Cómo se conectan frontend, API serverless y base de datos. Auth mock vs. auth real.</p>
+      </a>
+      <a class="tile card" href="tests.html">
+        <span class="icon">🧪</span>
+        <h2>Tests existentes</h2>
+        <p>Qué está cubierto con Vitest y Playwright hoy, y qué falta.</p>
+      </a>
+    </div>
+
+    <footer class="note">
+      Generado como referencia visual rápida a partir del estado real del repo (agosto 2026). Si el código cambia, esto puede quedar desactualizado — la fuente de verdad sigue siendo <code>documents/ARQUITECTURA.md</code> y <code>documents/TESTING.md</code>.
+    </footer>
+  </div>
+</body>
+</html>

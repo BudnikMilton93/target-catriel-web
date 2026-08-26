@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estructura del proyecto — Target Catriel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="_base.css">
+<style>
+  .tree { display: flex; flex-direction: column; gap: 0.6rem; }
+  .root {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 0.9rem 1.1rem;
+  }
+  .root .name { font-family: var(--mono); font-weight: 700; color: var(--navy-soft); }
+  .root .desc { color: var(--text-dim); font-size: 0.88rem; }
+  .children {
+    margin-left: 1.6rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .leaf {
+    display: grid;
+    grid-template-columns: minmax(140px, 240px) 1fr;
+    gap: 0.9rem;
+    padding: 0.4rem 0;
+    font-size: 0.88rem;
+  }
+  .leaf .name { font-family: var(--mono); color: var(--green-soft); overflow-wrap: break-word; word-break: break-word; }
+  .leaf .desc { color: var(--text-dim); }
+  @media (max-width: 560px) {
+    .leaf { grid-template-columns: 1fr; gap: 0.15rem; }
+    .root { grid-template-columns: 1fr; }
+  }
+  .count {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    margin-left: 0.4rem;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <nav class="crumbs"><a href="index.html">← Diagramas</a></nav>
+    <p class="eyebrow">Estructura</p>
+    <h1>Estructura del proyecto</h1>
+    <p class="subtitle">Carpetas de primer y segundo nivel. Frontend en JSX (sin TS), backend TypeScript bajo <code>api/</code>.</p>
+
+    <div class="tree">
+
+      <div class="root card">
+        <div class="name">src/</div>
+        <div class="desc">Frontend — React 19 + Vite, sin TypeScript</div>
+        <div class="children">
+          <div class="leaf"><div class="name">pages/</div><div class="desc">Home, Login, Clases, Viajes, Admin, Alumnos, Contacto, SobreNosotros, SeleccionarPanel <span class="count">9 páginas</span></div></div>
+          <div class="leaf"><div class="name">components/dashboard/&lt;rol&gt;/</div><div class="desc">Un panel por rol: admin, alumno, profesor, marketing</div></div>
+          <div class="leaf"><div class="name">components/{home,clases,viajes,profesor,admin,layout,shared}/</div><div class="desc">Componentes de UI agrupados por sección o reutilizables</div></div>
+          <div class="leaf"><div class="name">context/AuthContext.jsx</div><div class="desc">Auth <strong>mockeada</strong> — cualquier password funciona, no hay JWT real acá</div></div>
+          <div class="leaf"><div class="name">hooks/</div><div class="desc">useAlumno, useProfessor, useMarketing — lógica de datos por rol</div></div>
+          <div class="leaf"><div class="name">services/</div><div class="desc">api.js, contentService.js — llamadas HTTP hacia <code>api/</code></div></div>
+          <div class="leaf"><div class="name">styles/</div><div class="desc">CSS con variables custom (theming de marca)</div></div>
+        </div>
+      </div>
+
+      <div class="root card">
+        <div class="name">api/</div>
+        <div class="desc">Backend — funciones serverless estilo Vercel, TypeScript</div>
+        <div class="children">
+          <div class="leaf"><div class="name">_lib/</div><div class="desc">auth.ts, db.ts, response.ts, roles.ts, types.ts — compartido por todos los endpoints</div></div>
+          <div class="leaf"><div class="name">admin/</div><div class="desc">usuarios/, reportes/</div></div>
+          <div class="leaf"><div class="name">profesor/</div><div class="desc">bloques/, modulos/, contenidos/, alumnos/, respuestas/</div></div>
+          <div class="leaf"><div class="name">alumno/</div><div class="desc">bloques/, modulos/, respuestas/, asistencias/</div></div>
+          <div class="leaf"><div class="name">marketing/</div><div class="desc">noticias/, viajes/, galeria/, sobre-nosotros/</div></div>
+        </div>
+      </div>
+
+      <div class="root card">
+        <div class="name">prisma/</div>
+        <div class="desc">Esquema y semilla de datos</div>
+        <div class="children">
+          <div class="leaf"><div class="name">schema.prisma</div><div class="desc">18 modelos — ver diagrama de Arquitectura</div></div>
+          <div class="leaf"><div class="name">migrations/</div><div class="desc">init, add_registro_auditoria</div></div>
+          <div class="leaf"><div class="name">seed.ts</div><div class="desc">Usuarios de prueba (uno por rol)</div></div>
+        </div>
+      </div>
+
+      <div class="root card">
+        <div class="name">documents/</div>
+        <div class="desc">Roadmaps por rol + arquitectura + testing — <strong>revisar antes de tocar un área</strong></div>
+        <div class="children">
+          <div class="leaf"><div class="name">ARQUITECTURA.md</div><div class="desc">Modelo de datos y decisiones técnicas</div></div>
+          <div class="leaf"><div class="name">TESTING.md</div><div class="desc">Guía funcional + referencia de endpoints (cURL)</div></div>
+          <div class="leaf"><div class="name">ROADMAP_{PROFESOR,ALUMNO,ADMINISTRADOR,MARKETING}.md</div><div class="desc">Pendientes por rol</div></div>
+        </div>
+      </div>
+
+      <div class="root card">
+        <div class="name">e2e/</div>
+        <div class="desc">Specs de Playwright — hoy solo <code>auth.spec.ts</code></div>
+      </div>
+
+      <div class="root card">
+        <div class="name">scripts/</div>
+        <div class="desc">dev-api-server.ts — servidor local para <code>api/</code> en desarrollo</div>
+      </div>
+
+    </div>
+
+    <footer class="note">Conteos y rutas verificados contra el repo el 2026-08-26 — pueden desactualizarse a medida que el proyecto crece.</footer>
+  </div>
+</body>
+</html>

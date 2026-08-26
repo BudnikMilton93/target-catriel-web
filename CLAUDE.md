@@ -24,6 +24,8 @@ scripts/        utilidades de desarrollo (ej. dev-api-server.ts)
 
 Documentación existente a consultar según el área que toques: `documents/ROADMAP_INDEX.md` y los roadmaps por rol (`ROADMAP_PROFESOR.md`, `ROADMAP_ALUMNO.md`, `ROADMAP_ADMINISTRADOR.md`, `ROADMAP_MARKETING.md`), `documents/ARQUITECTURA.md`, `documents/TESTING.md`, `api/README.md`.
 
+`documents/diagrams/` tiene diagramas HTML de uso interno (estructura del proyecto, stack/librerías, arquitectura, tests existentes) para orientación visual rápida. **Actualizarlos cada vez que haya un cambio importante** en esas áreas (nueva librería o versión relevante, carpeta/módulo nuevo, cambio de arquitectura o de auth, tests nuevos o quitados) — no dejar que queden desactualizados respecto al resto de `documents/`.
+
 ## Roles y autenticación
 
 Cuatro roles: `administrador`, `profesor`, `alumno`, `marketing` (tabla `Rol`, relación N:N vía `UsuarioRol`).
