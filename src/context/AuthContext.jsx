@@ -27,28 +27,28 @@ const getDashboardOptions = (roles = []) => {
 // contra la API real.
 const mockUsers = {
   'maria@target.com': {
-    id: 'cmsg6edcf00078r2uobml8udi',
+    id: 'cmtatitsc0007oqd1hc4wx3xy',
     email: 'maria@target.com',
     nombre: 'Prof. María García',
     name: 'Prof. María García',
     roles: ['profesor']
   },
   'juan@student.com': {
-    id: 'cmsg6edcg000a8r2u80kyl8l2',
+    id: 'cmtatitsf000aoqd1uq0we7l6',
     email: 'juan@student.com',
     nombre: 'Juan Pérez',
     name: 'Juan Pérez',
     roles: ['alumno']
   },
   'admin@target.com': {
-    id: 'cmsg6edcc00048r2uktg2ho91',
+    id: 'cmtatits80004oqd1u6qhu4bb',
     email: 'admin@target.com',
     nombre: 'Admin Target',
     name: 'Admin Target',
     roles: ['administrador', 'profesor']
   },
   'marketing@target.com': {
-    id: 'cmsg6edcj000g8r2uxnn8lbbp',
+    id: 'cmtatitsl000goqd1i4j8f6vc',
     email: 'marketing@target.com',
     nombre: 'Marketing Team',
     name: 'Marketing Team',
