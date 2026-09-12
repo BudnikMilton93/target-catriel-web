@@ -47,22 +47,36 @@ Flujo de trabajo:
 4. `npx prisma migrate deploy` (apuntando a `.env.production`) — aplica las mismas
    migraciones en la base remota al momento de desplegar
 
-El paso 4 hoy lo automatiza el pipeline de CI/CD (ver `documents/CI_CD.md`) al desplegar
+El paso 4 hoy lo automatiza el pipeline de CI/CD (ver `documents/infraestructura/01-ci-cd.md`) al desplegar
 a staging o producción — no hace falta correrlo a mano.
 
 ## Stack técnico
-- Frontend: React con Vite, React Router DOM
-- Backend: Vercel Functions (serverless) en TypeScript — cada endpoint en `/api`
-- Base de datos: PostgreSQL alojado en Supabase
-- Media (estrategia hibrida): Cloudinary para imagenes, Instagram por URL para reels,
-  Supabase Storage para videos propios excepcionales
+
+> ⚠️ Esta sección mezcla lo que **ya está implementado** con el **plan objetivo para
+> producción**. No asumir que todo lo listado abajo existe en el código hoy — ver el
+> detalle de qué está vigente y qué es plan a continuación.
+
+**Vigente hoy (desarrollo local):**
+- Frontend: React 19 con Vite, React Router DOM v7
+- Backend: Vercel Functions (serverless) en TypeScript — cada endpoint en `/api`,
+  agrupado por rol (`admin/`, `alumno/`, `profesor/`, `marketing/`), no por recurso
+  plano — ver la sección "Estructura de carpetas (implementada)" más abajo
+- Base de datos: PostgreSQL en Docker local (ver sección anterior), sin Supabase
 - ORM: Prisma, para tipado automático del esquema relacional y migraciones
+- Autenticación: **mockeada** en el frontend (`src/context/AuthContext.jsx`, cualquier
+  password funciona); el backend sí valida contra la base real vía
+  `Authorization: Bearer <userId>` (sin JWT firmado — ver `02-plan-remediacion.md`)
+- CSS con variables custom properties para theming de marca
+
+**Plan objetivo para producción (no integrado todavía):**
+- Base de datos: PostgreSQL alojado en Supabase
+- Media (estrategia híbrida): Cloudinary para imágenes, Instagram por URL para reels,
+  Supabase Storage para videos propios excepcionales
 - Conexión a base de datos: usar el connection pooler de Supabase (PgBouncer), NO
   conexión directa — las functions serverless abren una conexión nueva por request y
   sin pooler se agotan las conexiones disponibles rápidamente
 - Autenticación: Supabase Auth para login/sesión; la tabla `usuario_roles` (definida
-  más abajo) se gestiona por encima, vinculada al `user.id` que provee Supabase Auth
-- CSS con variables custom properties para theming de marca
+  más abajo) se gestionaría por encima, vinculada al `user.id` que provee Supabase Auth
 
 ## Identidad de marca
 - Logo: isologo circular de Target, con libro y hoja como ícono central
@@ -162,6 +176,21 @@ sobre_nosotros (id, autor_id FK, contenido, imagen)
 Estas tablas solo se relacionan con `usuarios` (autor_id). No tienen ninguna relación
 con las tablas del núcleo académico — el rol Marketing nunca necesita acceder a ellas.
 
+### Entidades — Auditoría
+
+```
+registros_auditoria (id, usuario_id FK nullable, accion, entidad, detalles JSON, created_at)
+  -- accion: CREAR | ACTUALIZAR | ELIMINAR | LEER
+  -- entidad: BLOQUE | MODULO | USUARIO | NOTICIA | BLOQUE_ALUMNO | RESPUESTA | etc.
+  -- usuario_id usa onDelete SetNull (no Cascade como el resto del esquema): un
+  -- registro de auditoría no debe desaparecer si se borra el usuario que lo originó
+  -- indices en usuario_id y created_at
+```
+
+Se persiste vía `logAudit()` en `api/_lib/auth.ts`, invocado desde los endpoints que
+hacen altas/bajas sobre entidades académicas o de marketing. Un fallo al escribir la
+auditoría se loguea pero nunca interrumpe la operación de negocio que la originó.
+
 ### Control de acceso
 Los permisos por rol se validan en la capa de aplicación (backend), no en la base de
 datos. Antes de cada acción, verificar los roles del usuario en `usuario_roles`.
@@ -216,46 +245,63 @@ Ejemplos:
 
 ---
 
-## Estructura de carpetas sugerida
+## Estructura de carpetas (implementada)
+
+> Esta sección describía originalmente una estructura "sugerida" previa a la
+> implementación. Se actualizó para reflejar la organización real del código: los
+> endpoints se agrupan por **rol** (no por recurso plano bajo `/api`), y el frontend
+> vive en `src/` en la raíz del repo, no bajo `/frontend`.
 
 ```
 /api                      (Vercel Functions — cada archivo es un endpoint TypeScript)
-  auth/
-  bloques/
-  modulos/
-  contenidos/
-  respuestas/
-  asistencias/
-  usuarios/
-  noticias.ts
-  viajes.ts
-  galeria.ts
-  sobre-nosotros.ts
+  profesor/
+    bloques/              (index.ts, [id].ts, alumnos.ts)
+    modulos/
+    contenidos/
+    alumnos/               (búsqueda de candidatos a invitar a un bloque)
+    respuestas/            (lectura de respuestas de alumnos por bloque)
+  alumno/
+    bloques/
+    modulos/               (módulos habilitados de los bloques del alumno)
+    respuestas/
+    asistencias/
+  admin/
+    usuarios/
+    reportes/
+  marketing/
+    noticias/
+    viajes/
+    galeria/
+    sobre-nosotros/
   _lib/
-    db.ts                 (cliente Prisma conectado vía pooler de Supabase)
-    auth.ts                (validación de sesión con Supabase Auth)
-    roles.ts                (middleware/helper de verificación de roles)
+    db.ts                 (cliente Prisma singleton)
+    auth.ts                (validación de `Authorization: Bearer <usuarioId>`, sin JWT real aún; incluye `logAudit`)
+    roles.ts                (requireRole, hasRole, ROLE_PERMISSIONS)
+    types.ts
+    response.ts
 
 /prisma
-  schema.prisma             (definición de las tablas del modelo)
+  schema.prisma             (definición de las tablas del modelo, incluye `RegistroAuditoria`)
 
-/frontend
-  src/
-    components/
-      layout/          (Header, Footer)
-      home/             (Hero, ClasesOferta, AlumnoJourney, Noticias, GaleriaDestacada)
-      clases/
-      viajes/
-      dashboard/
-        profesor/       (ListaBloques, DetalleBloque, EditorModulo, TomaAsistencia)
-        alumno/         (MiBloque, ModuloView, MisRespuestas, MiProgreso)
-        admin/           (ListaProfesores, ListaBloques, ListaAlumnos, DetalleAlumno)
-        marketing/       (NoticiasAdmin, ViajesAdmin, GaleriaAdmin, SobreNosotrosAdmin)
-      shared/            (Card, Button, Modal, RoleGuard)
-    pages/
-    services/            (api.js — llamadas al backend por entidad)
-    context/              (AuthContext — usuario logueado y sus roles)
-    styles/
-      variables.css
-      global.css
+src/                        (raíz del repo, no bajo /frontend)
+  components/
+    layout/          (Header, Footer)
+    home/             (Hero, ClasesOferta, AlumnoJourney, Noticias, GaleriaDestacada)
+    clases/
+    viajes/
+    dashboard/
+      profesor/       (DashboardProfesor)
+      alumno/         (DashboardAlumno)
+      admin/           (DashboardAdmin)
+      marketing/       (DashboardMarketing)
+    admin/            (GaleriaAdmin, NoticiasAdmin, ViajesAdmin, SobreNosotrosAdmin)
+    profesor/         (BloqueModal)
+    shared/            (Card, Button, Modal, RoleGuard)
+  pages/
+  hooks/               (useAlumno.js, useProfessor.js, useMarketing.js — lógica de datos por rol)
+  services/            (api.js, contentService.js — llamadas al backend por entidad)
+  context/              (AuthContext — usuario mockeado logueado y sus roles)
+  styles/
+    variables.css
+    global.css
 ```
