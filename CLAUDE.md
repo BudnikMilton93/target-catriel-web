@@ -18,11 +18,11 @@ src/            frontend (páginas, componentes por rol, contexto de auth, hooks
 api/            endpoints serverless, agrupados por rol: admin/, alumno/, profesor/, marketing/
 api/_lib/       utilidades compartidas de la API: auth.ts, db.ts, response.ts, roles.ts, types.ts
 prisma/         schema.prisma y seed
-documents/      roadmaps por rol y documentación de arquitectura/testing — revisar antes de tocar un área
+documents/      roadmaps por rol y documentación de arquitectura/testing/infraestructura — revisar antes de tocar un área
 scripts/        utilidades de desarrollo (ej. dev-api-server.ts)
 ```
 
-Documentación existente a consultar según el área que toques: `documents/ROADMAP_INDEX.md` y los roadmaps por rol (`ROADMAP_PROFESOR.md`, `ROADMAP_ALUMNO.md`, `ROADMAP_ADMINISTRADOR.md`, `ROADMAP_MARKETING.md`), `documents/ARQUITECTURA.md`, `documents/TESTING.md`, `api/README.md`.
+Documentación existente a consultar según el área que toques: `documents/00-roadmap-index.md` y los roadmaps por rol bajo `documents/roadmaps/` (`01-roadmap-profesor.md`, `02-roadmap-alumno.md`, `03-roadmap-administrador.md`, `04-roadmap-marketing.md`), `documents/arquitectura/01-arquitectura.md`, `documents/arquitectura/02-plan-remediacion.md` (deuda técnica y seguridad), `documents/infraestructura/01-ci-cd.md`, `documents/testing/01-testing.md`, `api/README.md`.
 
 `documents/diagrams/` tiene diagramas HTML de uso interno (estructura del proyecto, stack/librerías, arquitectura, tests existentes) para orientación visual rápida. **Actualizarlos cada vez que haya un cambio importante** en esas áreas (nueva librería o versión relevante, carpeta/módulo nuevo, cambio de arquitectura o de auth, tests nuevos o quitados) — no dejar que queden desactualizados respecto al resto de `documents/`.
 
@@ -44,7 +44,7 @@ Cuatro roles: `administrador`, `profesor`, `alumno`, `marketing` (tabla `Rol`, r
 ## Estado conocido / pendientes explícitos
 
 - El campo `imagen`/`url` en `Galeria`, `Noticia` y `SobreNosotros` hoy es un string que se completa pegando una URL a mano — **no hay carga de archivos ni storage de objetos integrado** (se verificó: no hay `multipart`, `formidable`, `multer`, S3, Cloudinary ni Supabase Storage en el repo). Si el requerimiento es "subir una foto", esto es una decisión de arquitectura pendiente, no algo que ya esté resuelto en otra parte del código.
-- `documents/ROADMAP_MARKETING.md` ya señala el manejo de imágenes/multimedia como pendiente conocido — revisarlo antes de discovery en esa área.
+- `documents/roadmaps/04-roadmap-marketing.md` ya señala el manejo de imágenes/multimedia como pendiente conocido — revisarlo antes de discovery en esa área.
 - Según el README, "la parte aún pendiente es la integración final entre algunos paneles y la API real, junto con refinamientos UX y pruebas end-to-end" — no asumas que un panel ya está completamente conectado al backend solo porque el backend existe.
 
 ## Comandos útiles

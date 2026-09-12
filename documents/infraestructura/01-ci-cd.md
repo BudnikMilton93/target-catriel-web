@@ -74,7 +74,7 @@ terceros — no son algo que un agente pueda hacer por vos, hacelos en este orde
    para obtener `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID`.
 4. Generar un token en Vercel → Settings → Tokens (`VERCEL_TOKEN`).
 5. Provisionar dos bases Postgres — una para staging, otra para producción (Supabase es
-   la opción que ya anticipa `ARQUITECTURA.md`, pero cualquier proveedor con pooler +
+   la opción que ya anticipa `01-arquitectura.md`, pero cualquier proveedor con pooler +
    conexión directa sirve). Guardar el `DATABASE_URL` (pooled) y `DIRECT_URL` (directa)
    de cada una.
 6. En GitHub → Settings → Environments, crear `staging` y `production`. En

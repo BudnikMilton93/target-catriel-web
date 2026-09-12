@@ -65,13 +65,15 @@ Cualquier contraseña funciona en el mock de autenticación.
 
 ## Documentación del proyecto
 
-- [documents/ROADMAP_INDEX.md](documents/ROADMAP_INDEX.md)
-- [documents/ROADMAP_PROFESOR.md](documents/ROADMAP_PROFESOR.md)
-- [documents/ROADMAP_ALUMNO.md](documents/ROADMAP_ALUMNO.md)
-- [documents/ROADMAP_ADMINISTRADOR.md](documents/ROADMAP_ADMINISTRADOR.md)
-- [documents/ROADMAP_MARKETING.md](documents/ROADMAP_MARKETING.md)
-- [documents/TESTING.md](documents/TESTING.md) — guía de pruebas funcionales y referencia de endpoints (cURL)
-- [documents/ARQUITECTURA.md](documents/ARQUITECTURA.md) — modelo de datos y arquitectura del proyecto
+- [documents/00-roadmap-index.md](documents/00-roadmap-index.md)
+- [documents/roadmaps/01-roadmap-profesor.md](documents/roadmaps/01-roadmap-profesor.md)
+- [documents/roadmaps/02-roadmap-alumno.md](documents/roadmaps/02-roadmap-alumno.md)
+- [documents/roadmaps/03-roadmap-administrador.md](documents/roadmaps/03-roadmap-administrador.md)
+- [documents/roadmaps/04-roadmap-marketing.md](documents/roadmaps/04-roadmap-marketing.md)
+- [documents/testing/01-testing.md](documents/testing/01-testing.md) — guía de pruebas funcionales y referencia de endpoints (cURL)
+- [documents/arquitectura/01-arquitectura.md](documents/arquitectura/01-arquitectura.md) — modelo de datos y arquitectura del proyecto
+- [documents/arquitectura/02-plan-remediacion.md](documents/arquitectura/02-plan-remediacion.md) — deuda técnica y hallazgos de seguridad pendientes, priorizados por fase
+- [documents/infraestructura/01-ci-cd.md](documents/infraestructura/01-ci-cd.md) — pipeline de CI/CD, checklist de setup de staging/producción y deploy
 - [api/README.md](api/README.md)
 
 ## Importante

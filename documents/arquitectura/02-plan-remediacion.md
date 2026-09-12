@@ -15,7 +15,7 @@ No reemplaza los roadmaps por rol (`ROADMAP_*.md`) — esos documentan features 
 1. Resolver las tareas en orden de fase (0 → 3). Dentro de una fase, el orden numerado ya refleja dependencias (ej. no tiene sentido migrar a JWT antes de decidir el mecanismo de hashing).
 2. Cada tarea resuelta debe pasar por el flujo normal del proyecto: implementación → tests → code review → security review → PR (ver `CLAUDE.md`).
 3. Si una tarea revela que el alcance es mayor de lo esperado, dividirla en subtareas en vez de inflar el checklist original.
-4. Actualizar `ROADMAP_INDEX.md` y el roadmap de rol correspondiente si una tarea cambia el estado de integración de un panel.
+4. Actualizar `00-roadmap-index.md` y el roadmap de rol correspondiente si una tarea cambia el estado de integración de un panel.
 
 ---
 
@@ -68,7 +68,7 @@ No reemplaza los roadmaps por rol (`ROADMAP_*.md`) — esos documentan features 
 - [ ] Completar los TODOs en `src/services/api.js` (`noticiasService`/`viajesService` hoy devuelven arrays vacíos o el mismo objeto recibido sin llamar al backend).
 - **Archivos:** `src/services/contentService.js`, `src/services/api.js`, `src/hooks/useMarketing.js`.
 - **Criterio de hecho:** un cambio hecho en el panel de Marketing persiste en la base de datos y es visible en otra sesión/dispositivo.
-- **Relacionado:** `ROADMAP_MARKETING.md` ya señala esto como pendiente conocido — actualizar ese roadmap al cerrar esta tarea.
+- **Relacionado:** `04-roadmap-marketing.md` ya señala esto como pendiente conocido — actualizar ese roadmap al cerrar esta tarea.
 
 ### 1.4 — Arrancar cobertura de tests, empezando por autorización
 - [ ] Instalar framework de testing (vitest recomendado por afinidad con Vite; agregar supertest o equivalente para tests de API).

@@ -13,34 +13,34 @@ Este proyecto ya no está en estado "roadmap futuro": la base funcional está im
 | APIs backend | ✅ | CRUDs principales implementados para marketing, profesor, alumno y admin |
 | Integración real frontend ↔ API | ⏳ | Parcial; varios paneles tienen UI, pero aún se está conectando a endpoints reales |
 | Pruebas E2E | ⏳ | Requieren revisión de flujos reales sobre la base de datos |
-| Autenticación backend real / seguridad | 🟡 | Auditoría 2026-08-20: deuda esperable en esta etapa 100% local (auth backend sin verificar password, IDOR, contraseñas sin hashear). No bloquea el trabajo local actual. Ver [PLAN_REMEDIACION.md](./PLAN_REMEDIACION.md) — resolver antes de conectar staging/producción |
+| Autenticación backend real / seguridad | 🟡 | Auditoría 2026-08-20: deuda esperable en esta etapa 100% local (auth backend sin verificar password, IDOR, contraseñas sin hashear). No bloquea el trabajo local actual. Ver [PLAN_REMEDIACION.md](./arquitectura/02-plan-remediacion.md) — resolver antes de conectar staging/producción |
 
 ---
 
 ## ⚠️ Deuda técnica y seguridad
 
-Además de los roadmaps de feature por rol, el [PLAN_REMEDIACION.md](./PLAN_REMEDIACION.md) documenta hallazgos de una auditoría de código y seguridad (2026-08-20) traducidos a tareas priorizadas: autenticación backend rota, contraseñas sin hashear, un IDOR en respuestas de alumnos, falta de índices en Prisma, panel de Marketing desconectado de la API real, y ausencia de tests. El proyecto se trabaja hoy 100% en local sin ningún deploy productivo, así que nada de esto es urgente para el desarrollo del día a día — la Fase 0 de ese documento debe resolverse antes de conectar cualquier entorno real (staging incluido), no antes de seguir trabajando localmente.
+Además de los roadmaps de feature por rol, el [02-plan-remediacion.md](./arquitectura/02-plan-remediacion.md) documenta hallazgos de una auditoría de código y seguridad (2026-08-20) traducidos a tareas priorizadas: autenticación backend rota, contraseñas sin hashear, un IDOR en respuestas de alumnos, falta de índices en Prisma, panel de Marketing desconectado de la API real, y ausencia de tests. El proyecto se trabaja hoy 100% en local sin ningún deploy productivo, así que nada de esto es urgente para el desarrollo del día a día — la Fase 0 de ese documento debe resolverse antes de conectar cualquier entorno real (staging incluido), no antes de seguir trabajando localmente.
 
 ---
 
 ## 🎯 Roadmaps por rol
 
-### 👨‍💼 [ROADMAP ADMINISTRADOR](./ROADMAP_ADMINISTRADOR.md)
+### 👨‍💼 [ROADMAP ADMINISTRADOR](./roadmaps/03-roadmap-administrador.md)
 **Gestión de sistema y reportes**
 
 Estado actual: UI de dashboard creada y backend listo. La prioridad es conectar la vista a endpoints reales y completar reportes/auditoría.
 
-### 👨‍🏫 [ROADMAP PROFESOR](./ROADMAP_PROFESOR.md)
+### 👨‍🏫 [ROADMAP PROFESOR](./roadmaps/01-roadmap-profesor.md)
 **Gestión académica y contenido del curso**
 
 Estado actual: CRUD de bloques, módulos y contenidos integrado y funcional en la mayor parte del flujo. Faltan detalle de alumnos, asistencia y reportes avanzados.
 
-### 👨‍🎓 [ROADMAP ALUMNO](./ROADMAP_ALUMNO.md)
+### 👨‍🎓 [ROADMAP ALUMNO](./roadmaps/02-roadmap-alumno.md)
 **Aprendizaje y seguimiento del estudiante**
 
 Estado actual: dashboard implementado, bloque y módulo interactivos y flujo de respuestas disponible. El objetivo ahora es cerrar la integración real de navegación y respuestas con la API.
 
-### 📱 [ROADMAP MARKETING](./ROADMAP_MARKETING.md)
+### 📱 [ROADMAP MARKETING](./roadmaps/04-roadmap-marketing.md)
 **Contenido público**
 
 Estado actual: dashboard y componentes administrativos existen, pero requieren conexión con endpoints reales y revisión de contenido editorial.
@@ -97,6 +97,10 @@ La fase actual es una mezcla entre:
 - [prisma/schema.prisma](../prisma/schema.prisma)
 - [src/context/AuthContext.jsx](../src/context/AuthContext.jsx)
 - [src/services/api.js](../src/services/api.js)
+- [arquitectura/01-arquitectura.md](./arquitectura/01-arquitectura.md) — modelo de datos y arquitectura
+- [arquitectura/02-plan-remediacion.md](./arquitectura/02-plan-remediacion.md) — deuda técnica y seguridad
+- [infraestructura/01-ci-cd.md](./infraestructura/01-ci-cd.md) — pipeline de CI/CD y checklist de deploy
+- [testing/01-testing.md](./testing/01-testing.md) — guía de pruebas y referencia de endpoints
 
 ---
 
