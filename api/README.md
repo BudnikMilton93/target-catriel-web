@@ -33,14 +33,20 @@
 │   ├── modulos/
 │   │   ├── index.ts          # GET, POST módulos
 │   │   └── [id].ts           # GET, PUT, DELETE módulo
-│   └── contenidos/
-│       ├── index.ts          # POST contenidos
-│       └── [id].ts           # PUT, DELETE contenido
+│   ├── contenidos/
+│   │   ├── index.ts          # POST contenidos
+│   │   └── [id].ts           # PUT, DELETE contenido
+│   ├── alumnos/
+│   │   └── index.ts          # GET candidatos a invitar (búsqueda por nombre/email)
+│   └── respuestas/
+│       └── index.ts          # GET respuestas de alumnos por bloque (o de todos los bloques propios)
 │
 ├── alumno/                    # CRUD Alumno ✅
 │   ├── bloques/
 │   │   ├── index.ts          # GET bloques inscritos
 │   │   └── [id].ts           # GET módulos del bloque
+│   ├── modulos/
+│   │   └── index.ts          # GET módulos habilitados de los bloques del alumno (filtro opcional por bloqueId)
 │   ├── respuestas/
 │   │   ├── index.ts          # GET, POST respuestas
 │   │   └── [id].ts           # PUT, DELETE respuesta
@@ -65,12 +71,12 @@ Envía un header `Authorization` con el usuario ID:
 Authorization: Bearer <usuario_id>
 ```
 
-**Usuarios de prueba disponibles:**
-- `cmsg6edcc00048r2uktg2ho91` (Admin Target)
-- `cmsg6edcf00078r2uobml8udi` (Prof. María García)
-- `cmsg6edcg000a8r2u80kyl8l2` (Juan Pérez)
-- `cmsg6edci000d8r2upapne4c3` (Sofia López)
-- `cmsg6edcj000g8r2uxnn8lbbp` (Marketing Team)
+**Usuarios de prueba disponibles** (deben coincidir con los IDs reales de la base local — ver `src/context/AuthContext.jsx`, que documenta esta misma correspondencia):
+- `cmtatits80004oqd1u6qhu4bb` (Admin Target)
+- `cmtatitsc0007oqd1hc4wx3xy` (Prof. María García)
+- `cmtatitsf000aoqd1uq0we7l6` (Juan Pérez)
+- `cmtatitsl000goqd1i4j8f6vc` (Marketing Team)
+- Sofia López (`sofia@student.com`) está sembrada en `prisma/seed.ts` pero no tiene entrada en el mock del frontend — su ID real depende de tu seed local, consultalo con `npx prisma studio`
 
 ## Endpoints - Marketing
 
@@ -215,16 +221,25 @@ DELETE /api/marketing/sobre-nosotros/:id
 }
 ```
 
+## Auditoría
+
+Las acciones de alta/baja sobre entidades académicas y de marketing (invitar/remover
+alumno de un bloque, crear/eliminar noticias, etc.) quedan persistidas en la tabla
+`registros_auditoria` vía `logAudit()` (`api/_lib/auth.ts`). No hay endpoint de
+lectura/consulta de esta tabla todavía — solo escritura desde los handlers existentes.
+Un fallo al escribir la auditoría se loguea pero nunca interrumpe la operación de
+negocio que la originó.
+
 ## Testing con cURL
 
 ```bash
 # Obtener noticias
-curl -H "Authorization: Bearer cmsg6edcj000g8r2uxnn8lbbp" \
+curl -H "Authorization: Bearer cmtatitsl000goqd1i4j8f6vc" \
   http://localhost:3000/api/marketing/noticias
 
 # Crear noticia
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcj000g8r2uxnn8lbbp" \
+  -H "Authorization: Bearer cmtatitsl000goqd1i4j8f6vc" \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Test","cuerpo":"Contenido test"}' \
   http://localhost:3000/api/marketing/noticias
@@ -275,19 +290,19 @@ Authorization: Bearer <profesor_id>
 ### 👥 Alumnos del Bloque
 
 ```bash
-# Listar alumnos inscritos en el bloque
-GET /api/profesor/bloques/:bloqueId/alumnos
+# Listar alumnos inscritos en el bloque (bloqueId por query param, no path segment)
+GET /api/profesor/bloques/alumnos?bloqueId=:bloqueId
 Authorization: Bearer <profesor_id>
 
 # Invitar alumno al bloque
-POST /api/profesor/bloques/:bloqueId/alumnos
+POST /api/profesor/bloques/alumnos?bloqueId=:bloqueId
 Authorization: Bearer <profesor_id>
 {
   "alumnoId": "usuario_id"
 }
 
 # Remover alumno del bloque
-DELETE /api/profesor/bloques/:bloqueId/alumnos/:alumnoId
+DELETE /api/profesor/bloques/alumnos?bloqueId=:bloqueId&alumnoId=:alumnoId
 Authorization: Bearer <profesor_id>
 ```
 
@@ -351,6 +366,26 @@ DELETE /api/profesor/contenidos/:id
 Authorization: Bearer <profesor_id>
 ```
 
+### 🔍 Alumnos (candidatos a invitar)
+
+```bash
+# Buscar alumnos que se pueden invitar a un bloque (no inscritos aún)
+GET /api/profesor/alumnos?bloqueId=:bloqueId&q=:texto (q opcional, filtra por nombre/email)
+Authorization: Bearer <profesor_id>
+```
+
+### 📥 Respuestas de alumnos
+
+```bash
+# Listar respuestas de alumnos de un bloque propio, o de todos los bloques propios si no se pasa bloqueId
+GET /api/profesor/respuestas?bloqueId=:bloqueId (bloqueId opcional)
+Authorization: Bearer <profesor_id>
+```
+
+> ⚠️ Deuda de seguridad conocida (ver `documents/arquitectura/02-plan-remediacion.md`, tarea 0.4):
+> cuando se pasa `bloqueId` explícito, hoy no se valida que el bloque pertenezca al
+> profesor autenticado — es un IDOR pendiente de corregir, no algo ya resuelto.
+
 ---
 
 ## Endpoints - Alumno
@@ -366,6 +401,14 @@ Authorization: Bearer <alumno_id>
 
 # Obtener módulos del bloque
 GET /api/alumno/bloques/:id
+Authorization: Bearer <alumno_id>
+```
+
+### 📖 Módulos habilitados
+
+```bash
+# Listar módulos habilitados de los bloques en los que el alumno está inscrito
+GET /api/alumno/modulos?bloqueId=:bloqueId (bloqueId opcional; filtra a uno de los bloques propios)
 Authorization: Bearer <alumno_id>
 ```
 

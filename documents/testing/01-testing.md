@@ -3,7 +3,7 @@
 ## 1) Arranque del proyecto
 
 ```bash
-cd /Users/miltonjeremiasbudnik/Workspace/TargetCatriel-react-web/TargetCatriel-react-web
+cd target-catriel-web
 npm install
 npm run db:up
 npx prisma generate
@@ -145,28 +145,30 @@ specs — no asumir que todos los specs futuros lo necesitan.
 
 ## 8) Referencia de endpoints (cURL)
 
-IDs de la base semilla usados como Bearer token en estos ejemplos:
+IDs de la base semilla usados como Bearer token en estos ejemplos (deben coincidir con
+`src/context/AuthContext.jsx`, que documenta esta misma correspondencia):
 
 ```
-Admin Target:      cmsg6edcc00048r2uktg2ho91
-Prof. María:       cmsg6edcf00078r2uobml8udi
-Juan Pérez:        cmsg6edcg000a8r2u80kyl8l2
-Sofia López:       cmsg6edci000d8r2upapne4c3
-Marketing Team:    cmsg6edcj000g8r2uxnn8lbbp
+Admin Target:      cmtatits80004oqd1u6qhu4bb
+Prof. María:       cmtatitsc0007oqd1hc4wx3xy
+Juan Pérez:        cmtatitsf000aoqd1uq0we7l6
+Sofia López:       (sin entrada en el mock del frontend — sembrada en prisma/seed.ts,
+                    su ID real depende de tu seed local; consultalo con npx prisma studio)
+Marketing Team:    cmtatitsl000goqd1i4j8f6vc
 ```
 
 ### PROFESOR - Bloques
 
 Listar bloques del profesor
 ```bash
-curl -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/bloques
 ```
 
 Crear bloque
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "nivel": "A1",
@@ -180,14 +182,14 @@ curl -X POST \
 
 Obtener detalles de bloque
 ```bash
-curl -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/bloques/:bloqueId
 ```
 
 Actualizar bloque
 ```bash
 curl -X PUT \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "nivel": "A2",
@@ -199,7 +201,7 @@ curl -X PUT \
 Eliminar bloque
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/bloques/:bloqueId
 ```
 
@@ -207,17 +209,17 @@ curl -X DELETE \
 
 Listar alumnos inscritos
 ```bash
-curl -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/bloques/:bloqueId/alumnos
 ```
 
 Invitar alumno
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
-    "alumnoId": "cmsg6edcg000a8r2u80kyl8l2"
+    "alumnoId": "cmtatitsf000aoqd1uq0we7l6"
   }' \
   http://localhost:3000/api/profesor/bloques/:bloqueId/alumnos
 ```
@@ -225,22 +227,38 @@ curl -X POST \
 Remover alumno
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/bloques/:bloqueId/alumnos/:alumnoId
+```
+
+### PROFESOR - Candidatos a invitar
+
+Buscar alumnos no inscritos en un bloque (filtro opcional por nombre/email)
+```bash
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
+  "http://localhost:3000/api/profesor/alumnos?bloqueId=:bloqueId&q=juan"
+```
+
+### PROFESOR - Respuestas de alumnos
+
+Listar respuestas de un bloque propio (o de todos los bloques propios sin `bloqueId`)
+```bash
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
+  "http://localhost:3000/api/profesor/respuestas?bloqueId=:bloqueId"
 ```
 
 ### PROFESOR - Módulos
 
 Listar módulos
 ```bash
-curl -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+curl -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   "http://localhost:3000/api/profesor/modulos?bloqueId=:bloqueId"
 ```
 
 Crear módulo
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "bloqueId": ":bloqueId",
@@ -253,7 +271,7 @@ curl -X POST \
 Actualizar módulo
 ```bash
 curl -X PUT \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "estado": "habilitado"
@@ -264,7 +282,7 @@ curl -X PUT \
 Eliminar módulo
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/modulos/:moduloId
 ```
 
@@ -273,7 +291,7 @@ curl -X DELETE \
 Crear contenido
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "moduloId": ":moduloId",
@@ -287,7 +305,7 @@ curl -X POST \
 Actualizar contenido
 ```bash
 curl -X PUT \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   -H "Content-Type: application/json" \
   -d '{
     "contenidoActualizado": "Texto actualizado"
@@ -298,7 +316,7 @@ curl -X PUT \
 Eliminar contenido
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcf00078r2uobml8udi" \
+  -H "Authorization: Bearer cmtatitsc0007oqd1hc4wx3xy" \
   http://localhost:3000/api/profesor/contenidos/:contenidoId
 ```
 
@@ -306,28 +324,36 @@ curl -X DELETE \
 
 Listar bloques inscritos
 ```bash
-curl -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+curl -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   http://localhost:3000/api/alumno/bloques
 ```
 
 Obtener módulos del bloque
 ```bash
-curl -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+curl -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   http://localhost:3000/api/alumno/bloques/:bloqueId
+```
+
+### ALUMNO - Módulos habilitados
+
+Listar módulos habilitados de los bloques propios (filtro opcional por bloqueId)
+```bash
+curl -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
+  "http://localhost:3000/api/alumno/modulos?bloqueId=:bloqueId"
 ```
 
 ### ALUMNO - Respuestas
 
 Listar respuestas propias
 ```bash
-curl -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+curl -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   http://localhost:3000/api/alumno/respuestas
 ```
 
 Crear respuesta
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+  -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   -H "Content-Type: application/json" \
   -d '{
     "contenidoId": ":contenidoId",
@@ -340,7 +366,7 @@ curl -X POST \
 Actualizar respuesta
 ```bash
 curl -X PUT \
-  -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+  -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   -H "Content-Type: application/json" \
   -d '{
     "respuestaActualizada": "Respuesta actualizada",
@@ -352,7 +378,7 @@ curl -X PUT \
 Eliminar respuesta
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+  -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   http://localhost:3000/api/alumno/respuestas/:respuestaId
 ```
 
@@ -360,7 +386,7 @@ curl -X DELETE \
 
 Ver asistencias propias
 ```bash
-curl -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
+curl -H "Authorization: Bearer cmtatitsf000aoqd1uq0we7l6" \
   http://localhost:3000/api/alumno/asistencias
 ```
 
@@ -368,20 +394,20 @@ curl -H "Authorization: Bearer cmsg6edcg000a8r2u80kyl8l2" \
 
 Listar todos los usuarios
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   http://localhost:3000/api/admin/usuarios
 ```
 
 Obtener detalles de usuario
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   http://localhost:3000/api/admin/usuarios/:usuarioId
 ```
 
 Crear usuario
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+  -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Nuevo Usuario",
@@ -394,7 +420,7 @@ curl -X POST \
 Actualizar usuario
 ```bash
 curl -X PUT \
-  -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+  -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Nombre Actualizado"
@@ -405,7 +431,7 @@ curl -X PUT \
 Eliminar usuario
 ```bash
 curl -X DELETE \
-  -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+  -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   http://localhost:3000/api/admin/usuarios/:usuarioId
 ```
 
@@ -413,24 +439,24 @@ curl -X DELETE \
 
 Dashboard consolidado
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   http://localhost:3000/api/admin/reportes
 ```
 
 Reportes de actividades
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   "http://localhost:3000/api/admin/reportes?tipo=actividades"
 ```
 
 Resumen de asistencias
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   "http://localhost:3000/api/admin/reportes?tipo=asistencias"
 ```
 
 Progreso de alumnos
 ```bash
-curl -H "Authorization: Bearer cmsg6edcc00048r2uktg2ho91" \
+curl -H "Authorization: Bearer cmtatits80004oqd1u6qhu4bb" \
   "http://localhost:3000/api/admin/reportes?tipo=progreso"
 ```
