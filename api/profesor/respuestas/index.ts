@@ -2,7 +2,7 @@ import type { ServerResponse } from 'http';
 import { db } from '../../_lib/db';
 import { sendSuccess, sendError, handleError } from '../../_lib/response';
 import { withAuth, logAudit, requireRole } from '../../_lib/auth';
-import { AuthenticatedRequest } from '../../_lib/types';
+import { AuthenticatedRequest, ApiError, ErrorMessages } from '../../_lib/types';
 
 export default withAuth(async (req: AuthenticatedRequest, res: ServerResponse) => {
   try {
@@ -15,6 +15,19 @@ export default withAuth(async (req: AuthenticatedRequest, res: ServerResponse) =
       const where: any = {};
 
       if (bloqueId && typeof bloqueId === 'string') {
+        // Un profesor solo puede consultar respuestas de bloques propios.
+        // Un administrador puede consultar cualquier bloque.
+        if (!req.user!.roles.includes('administrador')) {
+          const bloque = await db.bloque.findUnique({
+            where: { id: bloqueId },
+            select: { id: true, profesorId: true },
+          });
+
+          if (!bloque || bloque.profesorId !== req.user!.id) {
+            throw new ApiError(403, ErrorMessages.FORBIDDEN);
+          }
+        }
+
         where.contenido = {
           modulo: {
             bloqueId,
