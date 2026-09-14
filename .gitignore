@@ -44,3 +44,6 @@ supabase/.branches
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Claude Code (symlinks a agentes/skills/commands compartidos, locales a esta máquina)
+.claude/
