@@ -3,6 +3,7 @@ import { db } from '../../_lib/db';
 import { sendSuccess, sendError, handleError } from '../../_lib/response';
 import { withAuth, logAudit } from '../../_lib/auth';
 import { requireRole } from '../../_lib/auth';
+import { hasRole } from '../../_lib/roles';
 import { AuthenticatedRequest } from '../../_lib/types';
 
 export default withAuth(async (req: AuthenticatedRequest, res: ServerResponse) => {
@@ -27,7 +28,7 @@ export default withAuth(async (req: AuthenticatedRequest, res: ServerResponse) =
       return sendError(res, 404, 'Bloque no encontrado');
     }
 
-    if (bloque.profesorId !== req.user!.id && req.user!.roles[0] !== 'administrador') {
+    if (bloque.profesorId !== req.user!.id && !hasRole(req.user!.roles, 'administrador')) {
       return sendError(res, 403, 'No tienes permisos para acceder a este bloque');
     }
 
