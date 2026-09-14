@@ -2,7 +2,7 @@
 
 Plataforma fullstack de una escuela de inglés: frontend React con dashboards por rol, backend de API bajo `api/`, base de datos PostgreSQL vía Prisma.
 
-Este archivo documenta lo específico de este proyecto. Los principios generales de ingeniería (SOLID, clean code, seguridad, git flow) y los agentes/skills/comandos disponibles (`/nueva-feature`, `/fix-bug`, `/review-pr`, `/ship`, y los agentes discovery/implementer/testing/code-review/security/git-delivery) vienen del `CLAUDE.md` global del desarrollador — no los dupliques acá.
+Este archivo documenta lo específico de este proyecto. Los principios generales de ingeniería (SOLID, clean code, seguridad, git flow) y los agentes/skills/comandos disponibles (`/nueva-feature`, `/fix-bug`, `/review-pr`, `/ship`, `/docs`, y los agentes discovery/implementer/testing/code-review/security/git-delivery/docs-master) vienen del `CLAUDE.md` global del desarrollador — no los dupliques acá. `docs-master`/`/docs` aplica en particular a este proyecto porque ya mantiene documentación real (`documents/arquitectura/`, roadmaps, diagramas HTML) — usarlo antes de abrir el PR de un cambio que la toque.
 
 ## Stack
 
@@ -22,7 +22,7 @@ documents/      roadmaps por rol y documentación de arquitectura/testing/infrae
 scripts/        utilidades de desarrollo (ej. dev-api-server.ts)
 ```
 
-Documentación existente a consultar según el área que toques: `documents/00-roadmap-index.md` y los roadmaps por rol bajo `documents/roadmaps/` (`01-roadmap-profesor.md`, `02-roadmap-alumno.md`, `03-roadmap-administrador.md`, `04-roadmap-marketing.md`), `documents/arquitectura/01-arquitectura.md`, `documents/arquitectura/02-plan-remediacion.md` (deuda técnica y seguridad), `documents/infraestructura/01-ci-cd.md`, `documents/testing/01-testing.md`, `api/README.md`.
+Documentación existente a consultar según el área que toques: `documents/00-roadmap-index.md` y los roadmaps por rol bajo `documents/roadmaps/` (`01-roadmap-profesor.md`, `02-roadmap-alumno.md`, `03-roadmap-administrador.md`, `04-roadmap-marketing.md`), `documents/arquitectura/01-arquitectura.md`, `documents/arquitectura/02-plan-remediacion.md` (deuda técnica y seguridad), `documents/arquitectura/03-plan-migracion-dotnet.md` (plan de acción vigente: migración de la API a .NET 8, en curso — revisar antes de tocar cualquier endpoint de `api/`), `documents/infraestructura/01-ci-cd.md`, `documents/testing/01-testing.md`, `documents/05-learnings.md` (aprendizajes y decisiones técnicas no obvias, capturados con la skill `capture-learnings`), `api/README.md`.
 
 `documents/diagrams/` tiene diagramas HTML de uso interno (estructura del proyecto, stack/librerías, arquitectura, tests existentes) para orientación visual rápida. **Actualizarlos cada vez que haya un cambio importante** en esas áreas (nueva librería o versión relevante, carpeta/módulo nuevo, cambio de arquitectura o de auth, tests nuevos o quitados) — no dejar que queden desactualizados respecto al resto de `documents/`.
 
@@ -55,4 +55,8 @@ npm run dev:api      # servidor de API local
 npm run db:up        # levanta Postgres en Docker
 npx prisma studio    # explorar la base de datos
 npm run lint         # ESLint
+npm run check:no-roles-index  # gate de CI: falla si algún endpoint indexa roles[N] en vez de usar hasRole()
+npm run typecheck    # chequeo de tipos (TS en api/)
+npm test             # unit/integration tests (Vitest)
+npm run test:e2e     # tests end-to-end (Playwright)
 ```
