@@ -57,6 +57,7 @@ model UsuarioRol {
   rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
 
   @@unique([usuarioId, rolId])
+  @@index([rolId])
   @@map("usuario_roles")
 }
 
@@ -103,6 +104,7 @@ model AlumnoTutor {
   tutor  Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
 
   @@unique([alumnoId, tutorId])
+  @@index([tutorId])
   @@map("alumno_tutores")
 }
 
@@ -126,6 +128,7 @@ model Bloque {
   modulos       Modulo[]
   recursos      BloqueRecurso[]
 
+  @@index([profesorId])
   @@map("bloques")
 }
 
@@ -140,6 +143,7 @@ model BloqueAlumno {
   alumno AlumnoPerfil @relation(fields: [alumnoId], references: [usuarioId], onDelete: Cascade)
 
   @@unique([bloqueId, alumnoId])
+  @@index([alumnoId])
   @@map("bloque_alumnos")
 }
 
@@ -154,6 +158,7 @@ model BloqueRecurso {
 
   bloque Bloque @relation(fields: [bloqueId], references: [id], onDelete: Cascade)
 
+  @@index([bloqueId])
   @@map("bloque_recursos")
 }
 
@@ -171,6 +176,8 @@ model Modulo {
   contenidos Contenido[]
   asistencias Asistencia[]
 
+  @@index([bloqueId])
+  @@index([creadoPor])
   @@map("modulos")
 }
 
@@ -186,6 +193,7 @@ model Contenido {
   modulo    Modulo     @relation(fields: [moduloId], references: [id], onDelete: Cascade)
   respuestas Respuesta[]
 
+  @@index([moduloId])
   @@map("contenidos")
 }
 
@@ -201,6 +209,8 @@ model Respuesta {
   contenido Contenido    @relation(fields: [contenidoId], references: [id], onDelete: Cascade)
   alumno    AlumnoPerfil @relation(fields: [alumnoId], references: [usuarioId], onDelete: Cascade)
 
+  @@index([contenidoId])
+  @@index([alumnoId])
   @@map("respuestas")
 }
 
@@ -215,6 +225,7 @@ model Asistencia {
   alumno AlumnoPerfil @relation(fields: [alumnoId], references: [usuarioId], onDelete: Cascade)
 
   @@unique([moduloId, alumnoId])
+  @@index([alumnoId])
   @@map("asistencias")
 }
 
@@ -234,6 +245,7 @@ model Noticia {
 
   autor Usuario @relation("AutorNoticias", fields: [autorId], references: [id], onDelete: Cascade)
 
+  @@index([autorId])
   @@map("noticias")
 }
 
@@ -253,6 +265,7 @@ model Viaje {
 
   autor Usuario @relation("AutorViajes", fields: [autorId], references: [id], onDelete: Cascade)
 
+  @@index([autorId])
   @@map("viajes")
 }
 
@@ -267,6 +280,7 @@ model Galeria {
 
   autor Usuario @relation("AutorGaleria", fields: [autorId], references: [id], onDelete: Cascade)
 
+  @@index([autorId])
   @@map("galeria")
 }
 
@@ -280,6 +294,7 @@ model SobreNosotros {
 
   autor Usuario @relation("AutorSobreNosotros", fields: [autorId], references: [id], onDelete: Cascade)
 
+  @@index([autorId])
   @@map("sobre_nosotros")
 }
 
