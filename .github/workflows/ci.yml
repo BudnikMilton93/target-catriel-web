@@ -27,6 +27,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Verificar que no se indexe el array de roles directamente
+        run: npm run check:no-roles-index
+
       - name: Typecheck (api/, scripts/, prisma/)
         run: npm run typecheck
 

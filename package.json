@@ -8,6 +8,7 @@
     "dev:api": "tsx scripts/dev-api-server.ts",
     "build": "vite build",
     "lint": "eslint .",
+    "check:no-roles-index": "bash scripts/check-no-roles-index.sh",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
