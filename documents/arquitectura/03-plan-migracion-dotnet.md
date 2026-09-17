@@ -33,8 +33,8 @@ Estas preguntas no impiden arrancar, pero cada una se vuelve bloqueante en un pu
 - [ ] **P3** — ¿El IDOR de `api/profesor/respuestas/index.ts` se resuelve ya en Node, o se resuelve directamente en la reescritura .NET? **Recomendación de seguridad (2026-09-12): resolverlo ya, ver acción S1 en sección 3** — no esperar a Fase 4 si hay chance de que Node siga sirviendo tráfico real antes de esa fase.
 - [ ] **P4** — ¿Ya existe una suscripción/instancia de Azure Container Apps de prueba, o se arranca de cero (red, secrets, IaC)? Bloqueante en el paso 2.1 (Fase 2, Gateway).
 - [ ] **P5** — Tecnología concreta del gateway (Azure Front Door, API Management, YARP propio, otro). Bloqueante en el paso 2.1.
-- [ ] **P6** — ¿El nuevo servicio de auth se implementa en Node (antes de tocar el primer endpoint .NET) o directamente como el primer servicio real en .NET? Bloqueante en el paso 1.1.
-- [ ] **P7** — Ubicación del nuevo proyecto .NET en el repo: monorepo (ej. `api-dotnet/` conviviendo con `api/`) o repo separado. Bloqueante en el paso 1.1.
+- ✅ **P6** — ¿El nuevo servicio de auth se implementa en Node (antes de tocar el primer endpoint .NET) o directamente como el primer servicio real en .NET? **Resuelto 2026-09-17**: directamente en .NET — es el primer servicio real del proyecto, evita reescribir el auth más adelante a costa de retrasar el arranque de la Fase 1 hasta tener el proyecto .NET base levantado (paso 1.1).
+- ✅ **P7** — Ubicación del nuevo proyecto .NET en el repo: monorepo (ej. `api-dotnet/` conviviendo con `api/`) o repo separado. **Resuelto 2026-09-17**: monorepo — nuevo proyecto bajo `api-dotnet/` conviviendo con `api/` en este mismo repo. Implica que el pipeline de CI (`01-ci-cd.md`) va a tener que correr ambos toolchains (Node y .NET) durante toda la convivencia; se documenta al cerrar la Fase 1 (paso 1.9) o antes si el paso 1.1 ya lo requiere.
 
 ## 3. Revisión de seguridad previa al arranque (2026-09-12)
 
@@ -70,7 +70,7 @@ Estas decisiones se toman como parte del diseño de los pasos 1.1-1.7, no se des
 - ✅ **0.1** Ver qué endpoints ya tienen test y cuáles no. **Resuelto**: resumen en sección 7 (26 endpoints, 8 con test, 18 sin test).
 - ✅ **0.2** Definir cómo se escribe un test de contrato. **Resuelto**: resumen en sección 8; ejemplo en `api/marketing/sobre-nosotros/[id].test.ts`.
 - ✅ **0.3** Escribir el test de contrato para el shape de error genérico/500 (hoy manejado por el catch de `withAuth`/`handleError`) — este es el que blinda el riesgo de "divergencia de errores no manejados" antes de que exista ningún código .NET. **Resuelto**: ver test en `api/_lib/response.test.ts`; resumen en sección 9.
-- [ ] **0.4** Confirmar P6 y P7 (dónde vive el auth nuevo, dónde vive el proyecto .NET) — desbloquea la Fase 1.
+- ✅ **0.4** Confirmar P6 y P7 (dónde vive el auth nuevo, dónde vive el proyecto .NET) — desbloquea la Fase 1. **Resuelto 2026-09-17**: ver P6/P7 en sección 2. Fase 1 desbloqueada.
 
 ### Fase 1 — 🔒 Autenticación nueva (JWT propio + hashing)
 
