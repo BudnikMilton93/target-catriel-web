@@ -67,8 +67,8 @@ Estas decisiones se toman como parte del diseño de los pasos 1.1-1.7, no se des
 
 ### Fase 0 — Red de seguridad antes de tocar nada
 
-- ✅ **0.1** Inventariar, endpoint por endpoint, cuáles de los 34 ya tienen test (`_lib`, `alumno/respuestas/[id]`, `profesor/bloques/[id]`, `profesor/contenidos/[id]`) y cuáles no (todo `admin/*`, la mayoría de `marketing/*`, el resto de `profesor/*` y `alumno/*`). Resultado: tabla de cobertura actual en este documento (sección 7). **Resuelto 2026-09-16**: inventario real da 26 endpoints (no 34, ver nota en sección 7), 8 con test + 3 en `_lib`, 18 sin test. Confirmado con `npm test`: 11 test files, 84 tests, todos pasando.
-- [ ] **0.2** Definir el formato del test de contrato (qué se fija: status code, shape de `ApiResponseBody`, casos de error 401/403/404/400). Un solo ejemplo de referencia, no una librería nueva — reusar Vitest.
+- ✅ **0.1** Ver qué endpoints ya tienen test y cuáles no. **Resuelto**: resumen en sección 7 (26 endpoints, 8 con test, 18 sin test).
+- ✅ **0.2** Definir cómo se escribe un test de contrato. **Resuelto**: resumen en sección 8; ejemplo en `api/marketing/sobre-nosotros/[id].test.ts`.
 - [ ] **0.3** Escribir el test de contrato para el shape de error genérico/500 (hoy manejado por el catch de `withAuth`/`handleError`) — este es el que blinda el riesgo de "divergencia de errores no manejados" antes de que exista ningún código .NET.
 - [ ] **0.4** Confirmar P6 y P7 (dónde vive el auth nuevo, dónde vive el proyecto .NET) — desbloquea la Fase 1.
 
@@ -154,44 +154,18 @@ Ya integrado en los pasos de arriba, no son tareas adicionales: hashing de passw
 
 ## 7. Cobertura de tests actual (paso 0.1)
 
-**Nota sobre el conteo**: el inventario real da **26 endpoints** bajo `api/` (excluyendo `_lib`), no 34 como asumía la hipótesis de arranque de este paso y como cita S1b (sección 3.1) sobre el "barrido de seguridad completo... en los 34 endpoints". Ver el detalle en la tabla de abajo — la discrepancia se señala también en el resumen de la tarea 0.1, no se corrige retroactivamente el texto de S1b porque ese barrido ya se hizo y punto, pero conviene no seguir arrastrando "34" como cifra de referencia en pasos futuros del plan.
+- Son 26 endpoints en total (no 34 como se pensaba al principio).
+- 8 endpoints ya tienen al menos un test, más 3 archivos internos (`_lib`) que también están cubiertos.
+- 18 endpoints todavía no tienen ningún test.
+- Con test: `alumno/respuestas/[id]`, `profesor/bloques/[id]`, `profesor/bloques/alumnos`, `profesor/contenidos` (index y `[id]`), `profesor/modulos` (index y `[id]`), `profesor/respuestas/index`.
+- Sin test: todo `admin/*`, todo `marketing/*`, el resto de `alumno/*`, y `profesor/alumnos`/`profesor/bloques/index`.
+- Algunos de los que sí tienen test solo cubren permisos (quién puede usarlo), no otros casos como "no existe" o validación de datos — quedan para reforzar antes de la Fase 4.
 
-Convención de tests confirmada: Vitest, archivo `*.test.ts` junto al endpoint que testea (no hay carpeta `__tests__` separada ni otra convención en el repo).
+## 8. Formato del test de contrato (paso 0.2)
 
-| Endpoint | Test | Qué cubre |
-|---|---|---|
-| `_lib/auth.ts` | Sí (`auth.test.ts`) | `logAudit` (persistencia, default de detalles, no propaga error, logging de error), `extractToken` (header válido/ausente/esquema inválido/formato inválido), `validateToken` (usuario existe/no existe/falla de DB), `authenticateRequest` (401 sin header, 401 token inválido, adjunta `req.user`), `withAuth` (401 sin token, happy path, excepción inesperada → 500 sin filtrar detalle) |
-| `_lib/response.ts` | Sí (`response.test.ts`) | `sendSuccess` (status dado y default 200), `sendError`, `handleError` (respeta `ApiError.statusCode`, `Error` genérico → 500 sin exponer mensaje interno, valor lanzado que no es `Error`), `validateMethod`, `sendMethodNotAllowed` (405) |
-| `_lib/roles.ts` | Sí (`roles.test.ts`) | `hasRole`, `hasAllRoles`, `requireRole` (401 sin usuario, 403 sin rol permitido, no lanza si tiene rol), `requireRoles` (predicado), `canPerformAction` (permitido/denegado/acción inexistente en la matriz, regla de negocio "alumno nunca edita bloque de profesor") |
-| `_lib/db.ts` | No | — (cliente Prisma, sin lógica propia) |
-| `_lib/types.ts` | No | — (solo tipos/`ApiError`) |
-| `admin/reportes/index.ts` | No | — |
-| `admin/usuarios/index.ts` | No | — |
-| `admin/usuarios/[id].ts` | No | — |
-| `alumno/asistencias/index.ts` | No | — |
-| `alumno/bloques/index.ts` | No | — |
-| `alumno/bloques/[id].ts` | No | — |
-| `alumno/modulos/index.ts` | No | — |
-| `alumno/respuestas/index.ts` | No | — |
-| `alumno/respuestas/[id].ts` | Sí (`[id].test.ts`) | 403 si un profesor usa el endpoint (`requireRole` solo alumno), 403 si el alumno edita respuesta ajena, 404 si no existe, edición y eliminación propia (happy path) |
-| `marketing/galeria/index.ts` | No | — |
-| `marketing/galeria/[id].ts` | No | — |
-| `marketing/noticias/index.ts` | No | — |
-| `marketing/noticias/[id].ts` | No | — |
-| `marketing/sobre-nosotros/index.ts` | No | — |
-| `marketing/sobre-nosotros/[id].ts` | No | — |
-| `marketing/viajes/index.ts` | No | — |
-| `marketing/viajes/[id].ts` | No | — |
-| `profesor/alumnos/index.ts` | No | — |
-| `profesor/bloques/index.ts` | No | — |
-| `profesor/bloques/[id].ts` | Sí (`[id].test.ts`) | 403 si no es dueño del bloque, 409 al cambiar de nivel con actividades ya respondidas, permite cambiar otros campos con respuestas existentes, 409 al eliminar bloque con respuestas, elimina bloque sin respuestas |
-| `profesor/bloques/alumnos.ts` | Sí (`alumnos.test.ts`) | GET: autorización admin (con y sin roles en primera posición, regresión de S3), profesor dueño, 403 profesor ajeno, 404 bloque inexistente, 400 sin `bloqueId`. POST: 400 sin `alumnoId`, 404 alumno inexistente, 409 ya inscripto, 201 inscripción por profesor dueño y por admin en bloque ajeno. DELETE: 400 sin `alumnoId`, 200 remoción por profesor dueño y por admin en bloque ajeno |
-| `profesor/contenidos/index.ts` | Sí (`index.test.ts`) | Solo autorización POST: 403 profesor con módulo ajeno, admin con roles en orden distinto puede agregar contenido a módulo ajeno. No cubre validación de body ni casos 404/409 de esta ruta |
-| `profesor/contenidos/[id].ts` | Sí (`[id].test.ts`) | 403 si no es dueño del bloque del contenido, 404 si no existe, 409 al editar/eliminar contenido con respuestas existentes, edición propia, admin edita contenido de cualquier profesor (incluyendo orden de roles distinto), 403 si un alumno intenta usar el endpoint |
-| `profesor/modulos/index.ts` | Sí (`index.test.ts`) | Solo autorización GET: 403 profesor con único rol accede a bloque ajeno, admin con roles en orden distinto accede a bloque ajeno. No cubre el resto de los verbos ni casos 404 |
-| `profesor/modulos/[id].ts` | Sí (`[id].test.ts`) | Solo autorización GET: mismo patrón que el índice (403 profesor ajeno, admin con orden de roles distinto) |
-| `profesor/respuestas/index.ts` | Sí (`index.test.ts`) | IDOR corregido (S1): 403/404 con `bloqueId` ajeno, 200 filtrando por `bloqueId` propio, 403 si `bloqueId` no existe, admin sin restricción de pertenencia, agregación sin `bloqueId` sobre bloques propios, 200 con lista vacía sin bloques propios (evita consulta innecesaria) |
-
-**Resumen**: de los 26 endpoints, **8 tienen al menos un test** (más los 3 archivos de `_lib` con test propio) y **18 no tienen ningún test**. De los 8 que sí tienen: `alumno/respuestas/[id]`, `profesor/bloques/[id]`, `profesor/bloques/alumnos`, `profesor/contenidos/[id]` y `profesor/respuestas/index` tienen cobertura razonablemente amplia (autorización + casos de negocio 403/404/409/happy path); `profesor/contenidos/index`, `profesor/modulos/index` y `profesor/modulos/[id]` solo cubren autorización (regresión del bug `roles[N]` de S1b) y no otros casos de esa misma ruta (validación de body, 404, etc.) — quedan como candidatos a ampliar antes de fijarlos como contrato definitivo en la Fase 4.
-
-Confirma la hipótesis de arranque en lo cualitativo (todo `admin/*` sin test, la mayoría de `marketing/*` sin test — de hecho el 100%, el resto de `alumno/*` sin test, y una parte de `profesor/*` sin test) pero corrige dos puntos: el total de endpoints es 26, no 34; y `profesor/bloques/alumnos.ts` también tiene test (no estaba en la lista de la hipótesis) además de los tres explícitamente nombrados.
+- Se sigue usando Vitest, como el resto del proyecto — no se suma ninguna herramienta nueva.
+- Cada test de contrato revisa dos cosas simples: qué código HTTP devuelve (200, 403, 404, etc.) y si la respuesta viene con la forma esperada (`{ success: true, data }` o `{ success: false, error }`) — sin fijarse en el texto exacto del mensaje de error, que puede cambiar de redacción sin que eso sea un problema.
+- El caso "sin sesión" (401) no se repite en cada endpoint: ya está cubierto una sola vez en `_lib/auth.test.ts`, y todos los endpoints lo heredan de ahí.
+- Los casos 403 (sin permiso) y 404 (no existe) sí se escriben por endpoint, porque dependen de la regla de negocio de cada uno.
+- Este mismo test, corrido después contra el endpoint ya reescrito en .NET, es lo que confirma que ese endpoint quedó bien migrado.
+- Ejemplo de referencia: `api/marketing/sobre-nosotros/[id].test.ts`.
