@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ApiError } from './types';
 import {
+  apiHandler,
   handleError,
   sendError,
   sendMethodNotAllowed,
@@ -43,34 +44,71 @@ describe('sendError', () => {
   });
 });
 
+// Test de contrato del paso 0.3 del plan de migración .NET
+// (documents/arquitectura/03-plan-migracion-dotnet.md, sección 9): fija el
+// shape genérico/500 que hoy produce `handleError` para cualquier error no
+// controlado, antes de que exista código .NET equivalente. Solo valida
+// status code + shape (`{ success: false, error }`), no el texto exacto del
+// mensaje salvo donde ya estaba fijado (no exponer detalle interno).
 describe('handleError', () => {
-  it('respeta el statusCode de un ApiError', () => {
+  it('respeta el statusCode explícito de un ApiError y no cae en el shape genérico 500', () => {
     const res = createMockRes();
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     handleError(res as any, new ApiError(409, 'conflicto de negocio'));
 
     expect(res.statusCode).toBe(409);
-    expect(JSON.parse(res.body!).error).toBe('conflicto de negocio');
+    expect(JSON.parse(res.body!)).toEqual({ success: false, error: 'conflicto de negocio' });
   });
 
-  it('convierte un Error genérico en 500 sin exponer el mensaje interno en `error`', () => {
+  it('convierte un Error genérico en 500 con shape estándar, sin exponer el mensaje interno en `error`', () => {
     const res = createMockRes();
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     handleError(res as any, new Error('detalle interno sensible'));
 
     expect(res.statusCode).toBe(500);
-    expect(JSON.parse(res.body!).error).toBe('Error interno del servidor');
+    expect(JSON.parse(res.body!)).toEqual({ success: false, error: expect.any(String) });
   });
 
-  it('maneja un valor lanzado que no es instancia de Error', () => {
+  it('convierte un valor lanzado que no es instancia de Error en el mismo shape 500 estándar', () => {
     const res = createMockRes();
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     handleError(res as any, 'string lanzado a mano');
 
     expect(res.statusCode).toBe(500);
+    expect(JSON.parse(res.body!)).toEqual({ success: false, error: expect.any(String) });
+  });
+});
+
+describe('apiHandler — contrato de error no controlado', () => {
+  it('un handler que lanza un valor no-Error (ej. string u objeto plano) responde 500 con el shape estándar', async () => {
+    const res = createMockRes();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const wrapped = apiHandler(async () => {
+      throw { foo: 'bar' };
+    });
+
+    await wrapped({} as any, res as any);
+
+    expect(res.statusCode).toBe(500);
+    expect(JSON.parse(res.body!)).toEqual({ success: false, error: expect.any(String) });
+  });
+
+  it('un handler que lanza un Error inesperado responde 500 con el shape estándar', async () => {
+    const res = createMockRes();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const wrapped = apiHandler(async () => {
+      throw new Error('fallo inesperado de Prisma');
+    });
+
+    await wrapped({} as any, res as any);
+
+    expect(res.statusCode).toBe(500);
+    expect(JSON.parse(res.body!)).toEqual({ success: false, error: expect.any(String) });
   });
 });
 
