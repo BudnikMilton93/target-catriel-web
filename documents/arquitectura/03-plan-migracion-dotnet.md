@@ -69,7 +69,7 @@ Estas decisiones se toman como parte del diseño de los pasos 1.1-1.7, no se des
 
 - ✅ **0.1** Ver qué endpoints ya tienen test y cuáles no. **Resuelto**: resumen en sección 7 (26 endpoints, 8 con test, 18 sin test).
 - ✅ **0.2** Definir cómo se escribe un test de contrato. **Resuelto**: resumen en sección 8; ejemplo en `api/marketing/sobre-nosotros/[id].test.ts`.
-- [ ] **0.3** Escribir el test de contrato para el shape de error genérico/500 (hoy manejado por el catch de `withAuth`/`handleError`) — este es el que blinda el riesgo de "divergencia de errores no manejados" antes de que exista ningún código .NET.
+- ✅ **0.3** Escribir el test de contrato para el shape de error genérico/500 (hoy manejado por el catch de `withAuth`/`handleError`) — este es el que blinda el riesgo de "divergencia de errores no manejados" antes de que exista ningún código .NET. **Resuelto**: ver test en `api/_lib/response.test.ts`; resumen en sección 9.
 - [ ] **0.4** Confirmar P6 y P7 (dónde vive el auth nuevo, dónde vive el proyecto .NET) — desbloquea la Fase 1.
 
 ### Fase 1 — 🔒 Autenticación nueva (JWT propio + hashing)
@@ -169,3 +169,8 @@ Ya integrado en los pasos de arriba, no son tareas adicionales: hashing de passw
 - Los casos 403 (sin permiso) y 404 (no existe) sí se escriben por endpoint, porque dependen de la regla de negocio de cada uno.
 - Este mismo test, corrido después contra el endpoint ya reescrito en .NET, es lo que confirma que ese endpoint quedó bien migrado.
 - Ejemplo de referencia: `api/marketing/sobre-nosotros/[id].test.ts`.
+
+## 9. Contrato del error genérico/500 (paso 0.3)
+
+- Se agregaron casos en `api/_lib/response.test.ts` (no por endpoint, porque el comportamiento es genérico de `handleError`/`apiHandler`): un `Error` inesperado y un valor no-`Error` lanzados dentro de un handler envuelto en `apiHandler` responden 500 con `{ success: false, error: <string> }`, mientras que un `ApiError` con status propio (ej. 409) lo sigue respetando y no cae en ese shape genérico.
+- Este es el contrato que debe reproducir el middleware de manejo de errores del backend .NET para cualquier excepción no controlada.
